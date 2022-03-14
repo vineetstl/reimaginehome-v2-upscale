@@ -4,9 +4,32 @@ import glob
 import os
 
 from realesrgan import RealESRGANer
+from flask import Flask
+from flask_cors import CORS
+from flask import request
+from flask import render_template
+import random
+import string
+import datetime
+from PIL import Image
+import requests
+import boto3
+import json
+
+app = Flask(__name__)
+CORS(app)
+
+secret_file = open("./secrets.json")
+secrets = json.load(secret_file)
+
+s3 = boto3.resource('s3',
+    aws_access_key_id=secrets["accessID"],
+    aws_secret_access_key=secrets["accessKey"],
+)
 
 
-def main():
+
+def main(input_path,model_path,scale,outscale):
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', type=str, default='inputs', help='Input image or folder')
     parser.add_argument(
@@ -32,7 +55,12 @@ def main():
         type=str,
         default='auto',
         help='Image extension. Options: auto | jpg | png, auto means using the same extension as inputs')
-    args = parser.parse_args()
+    args,unknown = parser.parse_known_args()
+
+    args.input = input_path
+    args.model_path = model_path
+    args.netscale = scale
+    args.outscale  = outscale
 
     upsampler = RealESRGANer(
         scale=args.netscale,
@@ -75,5 +103,66 @@ def main():
             cv2.imwrite(save_path, output)
 
 
-if __name__ == '__main__':
-    main()
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/super')
+def supre_resolution():
+    imageurl = request.args.get('imageurl')
+    scale_type = request.args.get('type')
+
+    # imageurl = "https://cdn.styldod.com/adobe_experiment/ext0_1619178332146.jpg"
+
+    S = 10  # number of characters in the string.
+    ran = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S)) 
+    unique_name =  str(ran)
+    if(imageurl == None ):
+        return {"error":"please provide url"}
+ 
+    im = Image.open(requests.get(imageurl,stream=True).raw)
+    width,height = im.size
+    # Width/height check only for testing
+    if(width > 2048 or height > 2048):
+        if width >= height:
+            new_w = 2048
+            new_h = (new_w/width) * height
+            im = im.resize((new_w,int(new_h)))
+        else:
+            new_h = 2048
+            new_w = (new_h/height) * width
+            im = im.resize((new_w,int(new_h)))
+    #----------------------------------
+    im = im.convert('RGB')
+    im.save("./inputs/"+unique_name + ".jpg")
+    input_path = "./inputs/"+unique_name + ".jpg"
+    print(scale_type)
+    if(scale_type == '4x'):
+        model_path = "experiments/pretrained_models/RealESRGAN_x4plus.pth"
+        scale = 4
+        out_scale = 4
+    elif(scale_type == '2x'):
+        model_path = "experiments/pretrained_models/RealESRGAN_x2plus.pth"
+        scale = 2
+        out_scale =2
+    else:
+        #for 1x
+        model_path = "experiments/pretrained_models/RealESRGAN_x2plus.pth"
+        scale = 2
+        out_scale =1
+    
+    main(input_path,model_path,scale,out_scale)
+    s3key = "adobe_experiment/aiml/" + unique_name+".jpg"
+    data = open("./results/"+ unique_name + "_out.jpg", 'rb')
+    s3.Bucket('styldodassets').put_object(Key=s3key, Body=data,ACL="public-read")
+    os.remove("./results/" + unique_name +"_out.jpg")
+    os.remove("./inputs/" + unique_name + ".jpg")
+    resp =  {
+        "image" :  "https://cdn.styldod.com/adobe_experiment/aiml/" + unique_name + ".jpg" ,
+    }
+
+    return resp
+
+# if __name__ == '__main__':
+#     main()

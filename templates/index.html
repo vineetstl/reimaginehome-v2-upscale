@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <form>
+        <h6>Upload files for testing</h6>
+        <input id="fileinput" type="file" multiple>
+        <label for="enhance">Choose scale type:</label>
+        <select name="scaletype" id="scaletype" style="margin-right:100px">
+            <option value="2x">2x</option>
+            <option value="4x">4x</option>
+            <option value="1x">1x</option>
+      
+        </select>
+    </form>
+    
+    <button id="upload">Upload</button>
+    <div id="displaybox" style="display: flex; flex-wrap: wrap;">
+
+    </div>
+    <script>
+        function makeid(length) {
+            var result = [];
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for (var i = 0; i < length; i++) {
+                result.push(characters.charAt(Math.floor(Math.random() *
+                    charactersLength)));
+            }
+            return result.join('');
+        }
+    </script>
+    <script>
+        $("#upload").click(async function () {
+            let allfiles = $("#fileinput")[0].files;
+            let prefixUrl = "https://dtbe.styldod.com/api_v2/utils/image_to_bucket_path?path=mltests/"
+            for (k in Object.keys(allfiles)) {
+                console.log(k)
+                fileElement = allfiles[k]
+                let fname = new Date().getTime() + makeid(5)+ ".jpeg"
+                let fullURL = prefixUrl + fname;
+                makeRequest("PUT", fullURL, fileElement).then(async response => {
+                    let type = $('#scaletype')[0].value
+                    let predictionURL = `/super?type=${type}&imageurl=https://cdn.styldod.com/adobe_experiment/mltests/`
+                    predictionURL += fname;
+                    let prediction = await makeRequest("GET", predictionURL, null)
+                    prediction = JSON.parse(prediction);
+                    let imageUrl = prediction.image
+                    //prediction.confidence = prediction.confidence.toFixed(2)
+                    
+                    let data = `<div style="margin:10px;">
+                                <img src=${'https://cdn.styldod.com/adobe_experiment/mltests/' + fname} style="max-width:512px">
+                                <img src=${imageUrl} style="max-width:512px">
+                                </div>`
+                                
+           
+                    $("#displaybox").append(data)
+
+                })
+            }
+
+        })
+        //https://cdn.styldod.com/adobe_experiment/mltests/test1.jpg
+    </script>
+    <script>
+        function getSortedObject(curr_object)
+        {
+            let sortables = []
+            for (var key in curr_object) {
+                sortables.push([key, curr_object[key]]);
+            }
+            sortables.sort(function(b, a) {
+                return a[1] - b[1];
+            });
+
+            let newObject = {}
+            sortables.forEach(element=>{
+                if(element[0].toLowerCase().indexOf("lawn") === -1)
+                {
+                    newObject[element[0]] = parseFloat((element[1]*100).toFixed(2))
+                }else{
+                    newObject[element[0]] = parseFloat((element[1]*1).toFixed(2))
+                }
+            });
+            return newObject
+        }
+    </script>
+    <script>
+        function makeRequest(method, url, fileElement) {
+            return new Promise(function (resolve, reject) {
+                let xhr = new XMLHttpRequest();
+                xhr.open(method, url);
+                xhr.onload = function () {
+                    if (this.status >= 200 && this.status < 300) {
+                        resolve(xhr.response);
+                    } else {
+                        reject({
+                            status: this.status,
+                            statusText: xhr.statusText
+                        });
+                    }
+                };
+                xhr.onerror = function () {
+                    reject({
+                        status: this.status,
+                        statusText: xhr.statusText
+                    });
+                };
+                xhr.send(fileElement);
+            });
+        }
+    </script>
+</body>
+
+</html>
