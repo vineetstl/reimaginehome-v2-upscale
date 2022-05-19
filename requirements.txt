@@ -1,4 +1,63 @@
-basicsr
-numpy
-opencv-python
-torch>=1.7
+absl-py==1.0.0
+addict==2.4.0
+basicsr==1.3.5
+boto3==1.21.19
+botocore==1.24.19
+brotlipy==0.7.0
+bson==0.5.10
+cachetools==5.0.0
+certifi==2020.6.20
+cffi @ file:///home/builder/ci_310/cffi_1642753365720/work
+charset-normalizer @ file:///tmp/build/80754af9/charset-normalizer_1630003229654/work
+cryptography @ file:///home/builder/ci_310/cryptography_1640808721005/work
+dnspython==2.2.1
+future==0.18.2
+google-auth==2.6.0
+google-auth-oauthlib==0.4.6
+grpcio==1.44.0
+idna @ file:///tmp/build/80754af9/idna_1637925883363/work
+imageio==2.16.1
+jmespath==0.10.0
+lmdb==1.3.0
+Markdown==3.3.6
+mkl-fft==1.3.1
+mkl-random @ file:///home/builder/ci_310/mkl_random_1641843545607/work
+mkl-service==2.4.0
+networkx==2.7.1
+numpy @ file:///tmp/build/80754af9/numpy_and_numpy_base_1639496814640/work
+oauthlib==3.2.0
+opencv-python==4.5.5.64
+packaging==21.3
+Pillow==9.0.1
+protobuf==3.19.4
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
+pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
+pymongo==4.0.2
+pyOpenSSL @ file:///opt/conda/conda-bld/pyopenssl_1643788558760/work
+pyparsing==3.0.7
+PySocks @ file:///home/builder/ci_310/pysocks_1640793678128/work
+python-dateutil==2.8.2
+PyWavelets==1.3.0
+PyYAML==6.0
+-e git+https://gitlab.com/rnd23/realesrgan.git@4dedc0bd7df65fe4efdbf7dc63cf7a346d2e2e79#egg=realesrgan
+requests @ file:///opt/conda/conda-bld/requests_1641824580448/work
+requests-oauthlib==1.3.1
+rsa==4.8
+s3transfer==0.5.2
+scikit-image==0.19.2
+scipy==1.8.0
+six @ file:///tmp/build/80754af9/six_1644875935023/work
+slack-logger==0.3.1
+tb-nightly==2.9.0a20220313
+tensorboard-data-server==0.6.1
+tensorboard-plugin-wit==1.8.1
+tifffile==2022.2.9
+torch==1.11.0
+torchaudio==0.11.0
+torchvision==0.12.0
+tqdm==4.63.0
+typing-extensions @ file:///tmp/build/80754af9/typing_extensions_1631814937681/work
+urllib3 @ file:///opt/conda/conda-bld/urllib3_1643638302206/work
+Werkzeug==2.0.3
+yapf==0.32.0

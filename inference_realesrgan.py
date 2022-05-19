@@ -4,10 +4,11 @@ import glob
 import os
 
 from realesrgan import RealESRGANer
-from flask import Flask
-from flask_cors import CORS
-from flask import request
-from flask import render_template
+# from flask import Flask
+# from flask_cors import CORS
+# from flask import request
+# from flask import render_template
+import torch
 import random
 import string
 import datetime
@@ -16,18 +17,20 @@ import requests
 import boto3
 import json
 
-app = Flask(__name__)
-CORS(app)
+# app = Flask(__name__)
+# CORS(app)
 
-secret_file = open("./secrets.json")
-secrets = json.load(secret_file)
+# secret_file = open("./secrets.json")
+# secrets = json.load(secret_file)
 
-s3 = boto3.resource('s3',
-    aws_access_key_id=secrets["accessID"],
-    aws_secret_access_key=secrets["accessKey"],
-)
+# s3 = boto3.resource('s3',
+#     aws_access_key_id=secrets["accessID"],
+#     aws_secret_access_key=secrets["accessKey"],
+# )
 
 
+import boto3
+s3 = boto3.client('s3')
 
 def main(input_path,model_path,scale,outscale):
     parser = argparse.ArgumentParser()
@@ -104,14 +107,14 @@ def main(input_path,model_path,scale,outscale):
 
 
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+# @app.route('/')
+# def home():
+#     return render_template('index.html')
 
-@app.route('/super')
-def supre_resolution():
-    imageurl = request.args.get('imageurl')
-    scale_type = request.args.get('type')
+# @app.route('/super')
+def supre_resolution(imageurl,scale_type):
+    # imageurl = request.args.get('imageurl')
+    # scale_type = request.args.get('type')
 
     # imageurl = "https://cdn.styldod.com/adobe_experiment/ext0_1619178332146.jpg"
 
@@ -128,11 +131,11 @@ def supre_resolution():
         if width >= height:
             new_w = 2048
             new_h = (new_w/width) * height
-            im = im.resize((new_w,int(new_h)))
+            im = im.resize((int(new_w),int(new_h)))
         else:
             new_h = 2048
             new_w = (new_h/height) * width
-            im = im.resize((new_w,int(new_h)))
+            im = im.resize((int(new_w),int(new_h)))
     #----------------------------------
     im = im.convert('RGB')
     im.save("./inputs/"+unique_name + ".jpg")
@@ -153,14 +156,19 @@ def supre_resolution():
         out_scale =1
     
     main(input_path,model_path,scale,out_scale)
-    s3key = "adobe_experiment/aiml/" + unique_name+".jpg"
-    data = open("./results/"+ unique_name + "_out.jpg", 'rb')
-    s3.Bucket('styldodassets').put_object(Key=s3key, Body=data,ACL="public-read")
+    torch.cuda.empty_cache()
+    bucket_path = "adobe_experiment/aiml/" + unique_name+".jpg"
+    output_path = "./results/"+ unique_name + "_out.jpg"
+    # s3.Bucket('styldodassets').put_object(Key=s3key, Body=data,ACL="public-read")
+
+    with open(output_path, 'rb') as f:
+        s3.upload_fileobj(f, 'magicstore', bucket_path)
+
+    print(bucket_path)
     os.remove("./results/" + unique_name +"_out.jpg")
     os.remove("./inputs/" + unique_name + ".jpg")
-    resp =  {
-        "image" :  "https://cdn.styldod.com/adobe_experiment/aiml/" + unique_name + ".jpg" ,
-    }
+    resp = "https://magicstore.styldod.com/adobe_experiment/aiml/" + unique_name + ".jpg"
+    
 
     return resp
 
