@@ -44,7 +44,7 @@ def main(input_path,model_path,scale,outscale):
     parser.add_argument('--netscale', type=int, default=4, help='Upsample scale factor of the network')
     parser.add_argument('--outscale', type=float, default=4, help='The final upsampling scale of the image')
     parser.add_argument('--suffix', type=str, default='out', help='Suffix of the restored image')
-    parser.add_argument('--tile', type=int, default=0, help='Tile size, 0 for no tile during testing')
+    parser.add_argument('--tile', type=int, default=800, help='Tile size, 0 for no tile during testing')
     parser.add_argument('--tile_pad', type=int, default=10, help='Tile padding')
     parser.add_argument('--pre_pad', type=int, default=0, help='Pre padding size at each border')
     parser.add_argument('--half', action='store_true', help='Use half precision during inference')
@@ -64,7 +64,7 @@ def main(input_path,model_path,scale,outscale):
     args.model_path = model_path
     args.netscale = scale
     args.outscale  = outscale
-
+    print('Tile', args.tile)
     upsampler = RealESRGANer(
         scale=args.netscale,
         model_path=args.model_path,

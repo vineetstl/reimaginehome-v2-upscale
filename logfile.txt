@@ -1,3 +1,0 @@
-Restarting...
-/usr/bin/nohup: ignoring input
-revive.sh: line 12: 171417 Killed                  /usr/bin/nohup python run_denoise_task.py
