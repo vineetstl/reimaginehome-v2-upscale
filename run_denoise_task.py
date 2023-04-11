@@ -79,7 +79,7 @@ if __name__ == "__main__":
                 try:
                     download_table.update_item(
                         Key={"job_id": job_id},
-                        UpdateExpression="SET output = :data",
+                        UpdateExpression="SET output_url = :data",
                         ConditionExpression="attribute_exists(job_id)",
                         ExpressionAttributeValues={":data": resp},
                     )
