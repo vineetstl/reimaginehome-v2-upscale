@@ -158,7 +158,8 @@ def supre_resolution(imageurl,scale_type):
     
     main(input_path,model_path,scale,out_scale)
     torch.cuda.empty_cache()
-    bucket_path = "REimagine-images/upscaled/" + str(uuid.uuid4()) +".jpg"
+    up_name = str(uuid.uuid4())
+    bucket_path = "REimagine-images/upscaled/" +  up_name +".jpg"
     output_path = "./results/"+ unique_name + "_out.jpg"
     # s3.Bucket('styldodassets').put_object(Key=s3key, Body=data,ACL="public-read")
 
@@ -168,7 +169,7 @@ def supre_resolution(imageurl,scale_type):
     print(bucket_path)
     os.remove("./results/" + unique_name +"_out.jpg")
     os.remove("./inputs/" + unique_name + ".jpg")
-    resp = "https://magicstore.styldod.com/REimagine-images/upscaled/" + unique_name + ".jpg"
+    resp = "https://magicstore.styldod.com/REimagine-images/upscaled/" + up_name + ".jpg"
     
 
     return resp
