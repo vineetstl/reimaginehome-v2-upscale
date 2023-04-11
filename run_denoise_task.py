@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
             try:
                 startTime = time.time()
-                resp = supre_resolution(image["url"], upscale_type)
+                resp = supre_resolution(job["url"], upscale_type)
                 endTime = time.time()
 
                 try:
@@ -82,7 +82,7 @@ if __name__ == "__main__":
                         UpdateExpression="SET outputs = :data",
                         ConditionExpression="attribute_exists(job_id)",
                         ExpressionAttributeValues={
-                            ":status": {f"_{upscale_type}": resp},
+                            ":data": {f"_{upscale_type}": resp},
                         },
                     )
                 except Exception as e:
