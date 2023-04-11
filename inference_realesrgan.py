@@ -1,4 +1,5 @@
 import argparse
+import uuid
 import cv2
 import glob
 import os
@@ -157,7 +158,7 @@ def supre_resolution(imageurl,scale_type):
     
     main(input_path,model_path,scale,out_scale)
     torch.cuda.empty_cache()
-    bucket_path = "REimagine-images/upscaled/" + unique_name+".jpg"
+    bucket_path = "REimagine-images/upscaled/" + str(uuid.uuid4()) +".jpg"
     output_path = "./results/"+ unique_name + "_out.jpg"
     # s3.Bucket('styldodassets').put_object(Key=s3key, Body=data,ACL="public-read")
 
@@ -171,6 +172,3 @@ def supre_resolution(imageurl,scale_type):
     
 
     return resp
-
-# if __name__ == '__main__':
-#     main()
