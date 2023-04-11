@@ -79,11 +79,9 @@ if __name__ == "__main__":
                 try:
                     download_table.update_item(
                         Key={"job_id": job_id},
-                        UpdateExpression="SET outputs = :data",
+                        UpdateExpression="SET output = :data",
                         ConditionExpression="attribute_exists(job_id)",
-                        ExpressionAttributeValues={
-                            ":data": {f"_{upscale_type}": resp},
-                        },
+                        ExpressionAttributeValues={":data": resp},
                     )
                 except Exception as e:
                     print(e)
