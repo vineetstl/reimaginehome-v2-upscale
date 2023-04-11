@@ -55,7 +55,7 @@ if __name__ == "__main__":
         data = queueHandler.receive()
 
         if data is not None:
-            body = data["MessageBody"]
+            body = data["Body"]
             job = json.loads(body)
             job_id = job["job_id"]
 
@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
             except Exception as e:
                 logging.error(str(e))
-                logging.error("Image Processing Failed: %s", image["_id"])
+                logging.error("Image Processing Failed")
                 traceback.print_exc()
                 update_job_status(job_id, "ERROR")
 

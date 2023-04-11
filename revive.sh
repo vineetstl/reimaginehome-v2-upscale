@@ -7,6 +7,6 @@ else
     echo "Restarting..."
     cd ~/realesrgan
     eval "$(conda shell.bash hook)"
-    conda activate venv
+    conda activate upscale
     /usr/bin/nohup python run_denoise_task.py
 fi
