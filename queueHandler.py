@@ -3,25 +3,7 @@ import botocore
 
 sqs = boto3.client('sqs')
 
-me_queue_set = {
-    'me_straighten': 'https://sqs.us-west-2.amazonaws.com/211949186043/AutoStraightenME',
-    'me_enhance': 'https://sqs.us-west-2.amazonaws.com/211949186043/ImageEnhanceME',
-    'me_sky_replace': 'https://sqs.us-west-2.amazonaws.com/211949186043/SkyReplaceME',
-    'me_ade': 'https://sqs.us-west-2.amazonaws.com/211949186043/RecogADEME',
-    'me_predict': 'https://sqs.us-west-2.amazonaws.com/211949186043/RecogPredictME',
-}
-
-queue_url = 'https://sqs.us-west-2.amazonaws.com/211949186043/DenoiseUpscale'
-
-
-def init(me):
-    global queue_url
-    if me:
-        queue_url = 'https://sqs.us-west-2.amazonaws.com/211949186043/DenoiseUpscale'
-    else:
-        queue_url = 'https://sqs.us-west-2.amazonaws.com/211949186043/DenoiseUpscale'
-
-
+queue_url = 'https://sqs.us-west-2.amazonaws.com/211949186043/reimagine-upscale'
 
 def change(receipt_handle, time):
     sqs.change_message_visibility(
