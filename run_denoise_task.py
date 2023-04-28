@@ -19,7 +19,7 @@ tablename = "reimagine-downloads"
 download_table = boto3.resource("dynamodb").Table(tablename)
 
 
-def update_job_status(download_job_id, status):
+def update_job_status(variant_id, status):
     update_data = {}
     set_string = ""
     if status == "DONE":
@@ -38,9 +38,9 @@ def update_job_status(download_job_id, status):
 
     try:
         download_table.update_item(
-            Key={"download_job_id": download_job_id},
+            Key={"variant_id": variant_id},
             UpdateExpression=set_string,
-            ConditionExpression="attribute_exists(download_job_id)",
+            ConditionExpression="attribute_exists(variant_id)",
             ExpressionAttributeValues=update_data,
         )
     except Exception as e:
@@ -57,9 +57,9 @@ if __name__ == "__main__":
         if data is not None:
             body = data["Body"]
             job = json.loads(body)
-            download_job_id = job["download_job_id"]
+            variant_id = job["variant_id"]
 
-            update_job_status(download_job_id, "PROCESSING")
+            update_job_status(variant_id, "PROCESSING")
 
             new_timeout = 15
             queueHandler.change(data["ReceiptHandle"], new_timeout)
@@ -78,9 +78,9 @@ if __name__ == "__main__":
 
                 try:
                     download_table.update_item(
-                        Key={"download_job_id": download_job_id},
+                        Key={"variant_id": variant_id},
                         UpdateExpression="SET output_url = :data",
-                        ConditionExpression="attribute_exists(download_job_id)",
+                        ConditionExpression="attribute_exists(variant_id)",
                         ExpressionAttributeValues={":data": resp},
                     )
                 except Exception as e:
@@ -94,7 +94,7 @@ if __name__ == "__main__":
                 logging.error(str(e))
                 logging.error("Image Processing Failed")
                 traceback.print_exc()
-                update_job_status(download_job_id, "ERROR")
+                update_job_status(variant_id, "ERROR")
 
-            update_job_status(download_job_id, "DONE")
+            update_job_status(variant_id, "DONE")
             queueHandler.delete(data["ReceiptHandle"])
