@@ -196,9 +196,10 @@ def supre_resolution(imageurl, scale_type):
     # s3.Bucket('styldodassets').put_object(Key=s3key, Body=data,ACL="public-read")
 
     with open(output_path, "rb") as f:
-        s3.upload_fileobj(
-            f, "magicstore", bucket_path, ExtraArgs={"ACL": "public-read"}
-        )
+        s3.upload_fileobj(f, "magicstore", bucket_path)
+        # s3.upload_fileobj(
+        #     f, "magicstore", bucket_path, ExtraArgs={"ACL": "public-read"}
+        # )
 
     print(bucket_path)
     os.remove("./results/" + unique_name + "_out.jpg")
