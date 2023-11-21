@@ -3,7 +3,7 @@ import botocore
 
 sqs = boto3.client('sqs')
 
-queue_url = 'https://sqs.us-west-2.amazonaws.com/211949186043/reimagine-upscale'
+queue_url = 'https://sqs.us-west-2.amazonaws.com/211949186043/reimagine-upscale-dev'
 
 def change(receipt_handle, time):
     sqs.change_message_visibility(
